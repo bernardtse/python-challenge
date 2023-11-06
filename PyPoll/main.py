@@ -5,6 +5,9 @@ import csv
 # Set path for file
 csvpath = os.path.join("Resources", "election_data.csv")
 
+# The script only works with this particular dataset for this election.
+# It is assumed that the number of candidates and the names of the candidates are known in advance.
+
 # Set variables
 
 # Candidate names

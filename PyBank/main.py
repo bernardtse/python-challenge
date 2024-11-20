@@ -1,4 +1,3 @@
-# Modules
 import os
 import csv
 
@@ -6,87 +5,71 @@ import csv
 csvpath = os.path.join("Resources", "budget_data.csv")
 
 # Set variables
-# Profit/loss for the first month
-isfirstmonth = True
-firstmonthpl = 0
-
-# Profit/loss for the last month
-lastmonthpl = 0
-
-# Other variables
-totalmonth = 0
+is_first_month = True
+first_month_pl = 0
+last_month_pl = 0
+total_months = 0
 total = 0
-profitchange = 0
-greatestincreasemonth = ""
-greatestincrease = 0
-greatestdecreasemonth = ""
-greatestdecrease = 0
+greatest_increase = {"month": "", "amount": 0}
+greatest_decrease = {"month": "", "amount": 0}
 
 # Open the CSV using the UTF-8 encoding
 with open(csvpath, encoding='UTF-8') as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")
     
-    # Read the header row without printing it out
+    # Read the header row
     csv_header = next(csvreader)
- 
-    # Loop through looking for the data
+    
+    # Loop through the rows
     for row in csvreader:
-        # Check first month
-        if isfirstmonth == True:
-            firstmonthpl = float(row[1])
-            isfirstmonth = False
+        month = row[0]
+        current_month_pl = float(row[1])
         
-        # Check total month
-        totalmonth = totalmonth + 1
+        # Check if it's the first month
+        if is_first_month:
+            first_month_pl = current_month_pl
+            is_first_month = False
         
-        # Calculate total
-        total = total + float(row[1])
+        # Update totals
+        total_months += 1
+        total += current_month_pl
         
-        # Check profit change
-        profitchange = float(row[1]) - lastmonthpl
-
-        # Check greatest increase and greatest decrease
-
-        if profitchange > greatestincrease:
-            greatestincreasemonth = row[0]
-            greatestincrease = profitchange
+        # Calculate the profit/loss change
+        if total_months > 1:  # Skip change calculation for the first month
+            profit_change = current_month_pl - last_month_pl
+            
+            # Update greatest increase
+            if profit_change > greatest_increase["amount"]:
+                greatest_increase = {"month": month, "amount": profit_change}
+            
+            # Update greatest decrease
+            if profit_change < greatest_decrease["amount"]:
+                greatest_decrease = {"month": month, "amount": profit_change}
         
-        if profitchange < greatestdecrease:
-            greatestdecreasemonth = row[0]
-            greatestdecrease = profitchange
-        
-        # Record profit/loss for the month
-        lastmonthpl = float(row[1])
-    
+        # Update the last month's profit/loss
+        last_month_pl = current_month_pl
 
-    # Calculate average change after loop (total number of changes = totalmonth-1)
-    avgchange = (lastmonthpl - firstmonthpl) / (totalmonth - 1)
-    
-    # Print results
-    
-    line1 = "Financial Analysis"
-    line2 = "----------------------------"
-    line3 = "Total Months: " + str(totalmonth)
-    line4 = "Total: $" +str(int(total))
-    line5 = "Average Change: $" + str(round(avgchange,2))
-    line6 = "Greatest Increase in Profits: " + str(greatestincreasemonth) + " ($" + str(round(greatestincrease)) + ")"
-    line7 = "Greatest Decrease in Profits: " + str(greatestdecreasemonth) + " ($" + str(round(greatestdecrease)) + ")"
-    
-    alllines = (line1 , line2, line3, line4, line5, line6, line7)
-    for line in alllines:
-        print(line)
+    # Calculate average change
+    avg_change = (last_month_pl - first_month_pl) / (total_months - 1)
 
-    # Specify the file to write to
-    output_path = os.path.join("analysis", "financialanalysis.txt")
+# Prepare the results
+results = [
+    "Financial Analysis",
+    "----------------------------",
+    f"Total Months: {total_months}",
+    f"Total: ${int(total)}",
+    f"Average Change: ${round(avg_change, 2)}",
+    f"Greatest Increase in Profits: {greatest_increase['month']} (${round(greatest_increase['amount'])})",
+    f"Greatest Decrease in Profits: {greatest_decrease['month']} (${round(greatest_decrease['amount'])})",
+]
 
-# Open the file using "write" mode. Specify the variable to hold the contents
-writer = open(output_path, 'w', encoding='UTF-8')
+# Convert results to a single string
+output = "\n".join(results)
 
-# Write the file
-for line in alllines:
-    writer.write(line)
-    writer.write("\n")
+# Print results to the console
+print(output)
 
-# Close file
-writer.close 
-    
+# Write results to the file
+output_path = os.path.join("analysis", "financialanalysis.txt")
+with open(output_path, 'w', encoding='UTF-8') as writer:
+    writer.write(output)

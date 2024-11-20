@@ -1,4 +1,5 @@
-# python-challenge - PyBank and PyPoll
+# python-challenge
+PyBank and PyPoll
 
 ## Contents
 1. [Overview](#1-overview)  

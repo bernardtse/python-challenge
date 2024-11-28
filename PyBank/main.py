@@ -2,7 +2,7 @@ import os
 import csv
 
 # Set path for file
-csvpath = os.path.join("Resources", "budget_data.csv")
+csvpath = os.path.join("resources", "budget_data.csv")
 
 # Set variables
 is_first_month = True

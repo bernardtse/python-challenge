@@ -56,6 +56,6 @@ output = "\n".join(results)
 print(output)
 
 # Write results to the file
-output_path = os.path.join("analysis", "electionresults.txt")
+output_path = os.path.join("analysis", "election_results.txt")
 with open(output_path, 'w', encoding='UTF-8') as writer:
     writer.write(output)
